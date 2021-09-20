@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="https://github.com/tonellotto/pira-project/blob/main/pira.png?raw=true" alt="PIRA" width="611px" height="221px"/>
+  <!-- <img src="https://github.com/tonellotto/pira-project/blob/main/pira.png?raw=true" alt="PIRA" width="611px" height="221px"/> -->
+  <img src="https://github.com/tonellotto/pira-project/blob/main/pira.png?raw=true" alt="PIRA" height="221px"/>
 </p>
 
 # PIRA: Personal Information Recognition with AI
