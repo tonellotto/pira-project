@@ -3,7 +3,7 @@
   <img src="https://github.com/tonellotto/pira-project/blob/main/pira.png?raw=true" alt="PIRA" height="221px"/>
 </p>
 
-# PIRA: Personal Information Recognition with AI
+# PIRA -  Personal Information Recognition with AI
 
 PIRA is a research project funded by the [AI4EU](http://www.ai4europe.eu) Project, funded by the European Union's 202 research and innovation programme under grant agreement 825619.
 
