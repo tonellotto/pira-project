@@ -18,3 +18,9 @@ The second component provides a cockpit of different obfuscation and anonymizati
 * geo PII, i.e., entities regarding georeferenced data. 
 
 Different obfuscation techniques are implemented to deal with these PII classes, ranging from perturbative methods, such as simple removal, to un-perturbative methods, such as statistical-preserving obfuscation, to geographical displacement, such as small-scale noise injection in geocoordinates.
+
+# Authors
+
+* Biagio Cornacchia, b.cornacchia@studenti.unipi.it
+* Nicola Tonellotto, nicola.tonellotto@unipi.it
+* Carlo Vallati, carlo.vallati@unipi.it
