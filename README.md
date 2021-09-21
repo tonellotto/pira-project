@@ -5,7 +5,7 @@
 
 # PIRA -  Personal Information Recognition with AI
 
-PIRA is a research project funded by the [AI4EU](http://www.ai4europe.eu) Project, funded by the European Union's 202 research and innovation programme under grant agreement 825619.
+PIRA is a research project funded by the [AI4EU](http://www.ai4europe.eu) Project, funded by the European Union's 2020 research and innovation programme under grant agreement 825619.
 
 The proposed solution aims at implementing two independent but interacting components focusing on: 1) identification, classification and linking of entities pertaining Personally Identifiable Information (PII) in semi-structured, e.g., CSV files and tabular data, and unstructured, e.g., textual documents, files; 2) the effective and efficient anonymization of the detected PII, according to their nature, e.g., person names, locations, email addresses and geographical coordinates. 
 
