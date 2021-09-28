@@ -27,5 +27,7 @@ The annontation labels in the annotated datasets are:
 
 According to the annotation specifications, if the text of a column, with the exception of the first header line, contains completely an annotations **per line**, the corresponding header text is annotated with the corresponding label. In case the line contents of a column contains longer texts containing one or more annotations, the corresponding header text is annotated with **Text_column**, and every line in the column contains its own annotation label.
 
-Every annotation label in the dataset is sepcified by the starting position (integer), the ending position (integer) and the label (string).
+**Moreover, according to the annotation specifications, contry names, e.g., Nigeria, Tanzania, Italy, are not labelled as geolocations.**
+
+Every annotation label in the dataset is specified by the starting position (integer), the ending position (integer) and the label (string).
 
