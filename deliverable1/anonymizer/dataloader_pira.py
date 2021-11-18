@@ -1,5 +1,6 @@
 from geopy import location
-from presidio_anonymizer.operators.geocoordinates import Geocoordinates
+#from presidio_anonymizer.operators.geocoordinates import Geocoordinates
+import geocoordinates
 import anonymizer_client as anonymizer
 import os
 from os import path, system, name
