@@ -451,13 +451,16 @@ docker build -t grpc-anonymizer .
 docker run –dp 8061:8061 grpc-anonymizer
 ```
 3) The docker run internally executes anonymizer_server.py. Open one more terminal and run the client which now can access the docker server
+
 ```console
 python data_loader.py
 ```
+
 to run general examples or 
 
 ```console
 python dataloader_pira.py
 ```
+
 to run more specific examples
 
