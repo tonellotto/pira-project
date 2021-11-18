@@ -47,7 +47,7 @@ The server uses the original text and eventually json files containing the optio
 
 To run examples:
 
-    $ git clone https://github.com/btessa99/microsoft_presidio.git
+    $ git clone https://github.com/tonellotto/pira-project
     
     $ pip3 install --upgrade pip
     $ pip3 install presidio-analyzer
@@ -56,7 +56,7 @@ To run examples:
     $ python3 -m spacy download en_core_web_lg
     $ python3 -m pip install grpcio grpcio-tools
 
-From the `microsoft-presidio/analyzer` directory:
+From the `deliverable1/analyzer` directory:
 
 1) Run the server
     ```console
@@ -399,7 +399,7 @@ This is an example of a deny-list based setup.
 	clientAnalyzer.closeConnection()
 ```
 ## Deployment
-From the microsoft-presidio/analyzer directory
+From the deliverable1/analyzer directory
 
 1) Build the docker image
 ```console
