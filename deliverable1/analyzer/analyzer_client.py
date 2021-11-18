@@ -19,6 +19,7 @@ class ClientEntity:
 
     def __init__(self, ip_address, port):
 
+
         self.ip_address = ip_address
         self.port = port
         self.channel = grpc.insecure_channel(ip_address + ':' + str(port))
@@ -29,11 +30,15 @@ class ClientEntity:
 
     def sendRequestAnalyze(self, filename):
 
+        print(self.ip_address,self.port)
+
         if not self.checkRequiredFiles(filename):
             return -1
 
+
         try:
             # sending original text to analyze
+
             chunk_iterator = generateChunks(filename)
             print("\nFROM CLIENT: sending original text...")
             response = self.stub.sendFileToAnalyze(chunk_iterator)
@@ -60,8 +65,13 @@ class ClientEntity:
                 
                 responses = self.stub.getAnalyzerResults(pb2.Request(uuidClient = my_uuid))
                 print("FROM CLIENT: waiting for analyzer results...")
+
+                path = PATH_RESULTS
+
+                if("pira" in filename):
+                    path =  PATH_RESULTS + "pira_results/"
                 
-                with open(PATH_RESULTS + filename + "-results.txt", "w") as RecognizerResults:
+                with open(path + filename + "-results.txt", "w") as RecognizerResults:
                     for response in responses:
                         string = "{ " + f'"start": {response.start}, "end": {response.end}, "score": {response.score:.2f}, "entity_type": "{response.entity_type}", "analysis_explanation": "{response.analysis_explanation}"' + " }\n"
                         RecognizerResults.write(string)
@@ -84,10 +94,16 @@ class ClientEntity:
 
     def checkRequiredFiles(self, filename):
 
+        path = PATH_FILES
+
+        if("pira" in filename):
+            path = PATH_FILES + "/pira_files/"
+
         # check text file
-        if not os.path.exists(PATH_FILES + filename + ".txt"):
+        if not os.path.exists(path + filename + ".txt"):
             print("ERROR: file text not found!")
             return False
+
 
         # check conf setup (AnalyzerEngine and Analyze params)
         if self.engine_curr_config:
@@ -147,7 +163,11 @@ def generateChunks(filename):
     global TOTAL_CHUNKS
     cont = 0
 
-    with open(PATH_FILES + filename + ".txt", "r") as textToAnalyze:
+    path = PATH_FILES
+    if("pira" in filename):
+        path = PATH_FILES + "/pira_files/"
+
+    with open(path + filename + ".txt", "r") as textToAnalyze:
         while True:
             data = textToAnalyze.read(CHUNK_SIZE)
 

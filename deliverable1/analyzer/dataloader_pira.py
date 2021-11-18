@@ -3,9 +3,17 @@ import time
 import os
 from os import system, name
 import sys
+import json
+import preprocess_dataset
 
 def presidio_analyzer_start(clientAnalyzer):
-       
+
+    LOCATE_PY_FILENAME = __file__
+    LOCATE_PY_DIRECTORY_PATH = os.path.abspath(os.path.dirname(__file__))
+    LOCATE_PY_PARENT_DIR = os.path.abspath(os.path.join(LOCATE_PY_DIRECTORY_PATH, ".."))
+
+
+
     print(f"SERVER INFO: {clientAnalyzer.ip_address}:{clientAnalyzer.port}\n")
 
     while True:
@@ -22,29 +30,55 @@ def presidio_analyzer_start(clientAnalyzer):
         elif command == 2:
             setupAnalyze(clientAnalyzer)
             clear()
+
         elif command == 3:
-            filenameList = []
-            numFiles = int(input("\nHow many files do you want to analyze? "))
 
-            for i in range(numFiles):
-                filenameList.append(input(f"{i+1}) Filename: "))
+                json_file  = open(LOCATE_PY_PARENT_DIR+"/new_dataset.json","r")
+                dataset = json.load(json_file)
+                json_file.close()
 
-            for filename in filenameList:
-                print(f"\n=============== {filename} ANALYSES ===============\n")
-                print(f"Searching for {filename}")
+                n_files = 1
+                names = []
+                files = []
+                path = LOCATE_PY_PARENT_DIR+"/files/pira_files/"
 
-                result = clientAnalyzer.sendRequestAnalyze(filename)
+                for line in dataset:
 
-                if result == -1:
-                    print("\nERROR: missing file!")
-                elif result == 0:
-                    print("\nERROR: original text file not received correctly")
-                elif result == -2:
-                    print("\nERROR: connection error")
-                else:
-                    print(f"\n{filename} analyzed successfully!")
+                    
+                    filename = "pira_file" + str(n_files)
 
-            exit()
+                    temp = open(path+filename+".txt","w") #create a new temporary file
+                   
+                    files.append(temp) #append file to a list of files to send to the Analyzer
+
+                    text_to_analyze = line['data']
+
+                    temp.writelines(text_to_analyze) #write data to analyze
+
+                    names.append(filename)
+                    temp.close()
+
+                    n_files += 1
+
+
+
+                for f in names:
+
+                    print(f"\n=============== DOCUMENT {f} ANALYSES ===============\n")
+
+                    result = clientAnalyzer.sendRequestAnalyze(f) #send request to analyzer
+
+                    if result == -1:
+                        print("\nERROR: missing file!")
+                    elif result == 0:
+                        print("\nERROR: original text file not received correctly")
+                    elif result == -2:
+                        print("\nERROR: connection error")
+                    else:
+                        print(f"\n File analyzed successfully!")
+
+
+                exit()
         elif command == 4:
             clear()
             break
@@ -253,9 +287,14 @@ if __name__ == "__main__":
     
     clear()
 
+    preprocess_dataset.preprocess_file()
+
+
     try:
+        
         while True:
             print(":::::::::::::::::: PRESIDIO ANALYZER (data loader) ::::::::::::::::::\n")
+
             print("1) Analyzer")
             print("2) Server configuration")
             print("3) Quit")

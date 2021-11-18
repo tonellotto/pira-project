@@ -6,6 +6,7 @@ RUN pip3 install --upgrade pip
 
 RUN pip3 install presidio-analyzer
 RUN pip3 install spacy
+RUN python3 -m spacy download it_core_news_sm
 RUN python3 -m spacy download en_core_web_lg
 RUN pip3 install numpy
 
@@ -18,5 +19,6 @@ RUN pip3 install -r requirements.txt
 
 RUN useradd app
 USER app
+
 
 ENTRYPOINT [ "python3","-u","analyzer_server.py" ]

@@ -1,6 +1,8 @@
+from geopy import location
+from presidio_anonymizer.operators.geocoordinates import Geocoordinates
 import anonymizer_client as anonymizer
 import os
-from os import system, name
+from os import path, system, name
 import time
 import sys
 
@@ -25,14 +27,16 @@ def presidio_anonymizer_start(clientAnonymizer):
 
             exit()
         elif command == 3:
-            filenameList = []
 
-            numFiles = int(input("\nHow many files do you want to anonymize? "))
+            PATH = "../files/pira_files/"
+            curFile = 1
+            prefix = "pira_file"
 
-            for i in range(numFiles):
-                filenameList.append(input(f"{i+1}) Filename: "))
+            while(os.path.exists(PATH + prefix + str(curFile) + ".txt")):
 
-            for filename in filenameList:
+                filename = prefix + str(curFile)
+                curFile += 1
+
                 print(f"\n=============== {filename} ANONYMIZATION ===============\n")
                 
                 if clientAnonymizer.sendRequestAnonymize(filename) != -1:
@@ -128,15 +132,18 @@ def setupConfig(clientAnonymizer, configFile):
 
                 anonymizer.addHash(entity_type, hash_type)
             elif operator == "replace":
-                new_value = input("New value: ")
 
+                new_value = input("New value: ")
+            
                 anonymizer.addReplace(entity_type, new_value)
+
             elif operator == "redact":
                 anonymizer.addRedact(entity_type)
+
             elif operator == "encrypt":
                 key = input("Key (128, 192 or 256 bits length): ")
-
                 anonymizer.addEncrypt(entity_type, key)
+
             elif operator == "mask":
                 masking_char = input("Masking char: ")
                 chars_to_mask = input("Chars to mask: ")
@@ -145,8 +152,47 @@ def setupConfig(clientAnonymizer, configFile):
                 anonymizer.addMask(entity_type, masking_char, chars_to_mask, from_end)
             elif operator == "decrypt":
                 key = input("Key (128, 192 or 256 bits length): ")
-
                 anonymizer.addDecrypt(entity_type, key)
+
+            elif operator == "geocoordinates":
+
+                print("\n=============== Here's the list of functions to choose from: ===============")
+                print("1) calculate_coordinates")
+                print("2) within_a_circle")
+                print("3) donut_masking")
+                print("4) standard_gaussian")
+                print("5) bimodal_gaussian")
+
+                function = input("\nName of the function: ")
+                radius = 0
+                variance = 0
+                external_radius = 0
+                variance2 = 0
+                location2 = 0
+
+                if(function == "calculate_coordinates" or function == "within_a_circle" ):
+                    radius = input("Select radius: ")
+
+                elif(function == "donut_masking"):
+                    radius = input("Select internal radius: ")
+                    external_radius = input("Select external radius: ") 
+
+                elif(function == "standard_gaussian"):
+                    variance = input("Select variance: ")
+                
+                elif(function == "bimodal_gaussian"):
+                    variance = input("Select first variance: ")
+                    location2 = input("Select second location: ")
+                    variance2 = input("Select second variance: ")
+
+
+                else:
+                    print("Please select one of the functions listed above!\n")
+                    continue
+
+                anonymizer.addGeocoordinates(entity_type, function, radius, external_radius,variance, location2, variance2)
+
+                
             else:
                 print("Invalid operator!\n")
 
@@ -168,6 +214,7 @@ def exit():
             break
 
 if __name__ == "__main__":
+
 
     try:
         while True:

@@ -4,6 +4,7 @@ from proto import model_pb2 as pb2
 
 from presidio_anonymizer import DeanonymizeEngine, AnonymizerEngine
 from presidio_anonymizer.entities.engine import RecognizerResult, AnonymizerResult, OperatorConfig
+import geocoordinates
 
 from concurrent import futures
 import uuid
@@ -37,7 +38,7 @@ class AnonymizerEntityServicer(pb2_grpc.AnonymizerEntityServicer):
     def sendRecognizerResults(self, request_iterator, context):
         
         uuidClient = 0
-
+    
         for request in request_iterator:
             if uuidClient == 0:
                 uuidClient = request.uuidClient

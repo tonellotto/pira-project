@@ -47,7 +47,7 @@ The server uses the original text and eventually json files containing the optio
 
 To run examples:
 
-    $ git clone https://github.com/biagiocornacchia/microsoft-presidio.git
+    $ git clone https://github.com/btessa99/microsoft_presidio.git
     
     $ pip3 install --upgrade pip
     $ pip3 install presidio-analyzer
@@ -72,7 +72,9 @@ From the `microsoft-presidio/analyzer` directory:
     ```
 Now you have just run a client-server application with gRPC!</br>
 
-## An example
+The Analyzer is configured to support both Italian and English and the first is the default language used for the recognition.
+
+## A generic example
 
 File demo2.txt (which resides in the `files` folder) contains
         
@@ -112,8 +114,55 @@ Analyzer results saved into `analyzer-results/` folder (analyzer-results/demo2-r
     { "start": 0, "end": 4, "score": 0.85, "entity_type": "PERSON" }
     { "start": 33, "end": 44, "score": 0.85, "entity_type": "US_SSN" }
     { "start": 73, "end": 81, "score": 0.65, "entity_type": "US_DRIVER_LICENSE" }
+    
+## A specific example with the PIRA Dataset
+
+First you have to configure the server (in this example localhost:8061)
+
+    :::::::::::::::::: PRESIDIO ANALYZER (data loader) ::::::::::::::::::
+
+    1) Analyzer
+    2) Server configuration
+    3) Quit
+
+    Command: 2
+
+    =============== Server config ===============
+
+    IP ADDRESS: localhost
+    SERVER PORT: 8061
+
+Select `analyze` (command 3) and choose the file to analyze
+
+    SERVER INFO: localhost:8061
+
+    1) Setup AnalyzerEngine
+    2) Setup Analyze params
+    3) Analyze
+    4) Back
+
+    Command: 3
+    
+And the recognition process will start right away.
+
+The data loader will automatically split the PIRA dataset into separate files generated under the `files/pira-files/`  and iteratively send them to the Analyzer
+
+Analyzer results are saved into `analyzer-results/pira-results/`
 
 ## NOTE
+
+# COORDINATES RECOGNITION
+
+The new recognizer implemented for recognizing the geocoordinates is based on the PatternRecognizer class, since it supports regex based recognition.
+
+The CoordinatesRecognizer class, as a matter of fact, is composed of a list of regular expression :
+
+- Decimal Degrees Coordinates: `[-+]?([1-8]?\d(\.\d+)|90(\.0+)?),\s*[-+]?(180(\.0+)|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)`
+
+- Latitude: `([1-8]?\d(\.\d+)|90(\.0+)?)[N|S]` or `[N|S]([1-8]?\d(\.\d+)|90(\.0+)?)`
+- Longitude: `[E|W](180(\.0+)|((1[0-7]\d)|([1-9]?\d))(\.\d+))` or `(180(\.0+)|((1[0-7]\d)|([1-9]?\d))(\.\d+))[E|W]`
+- Degrees Minutes Seconds: `((\d+)\s?\º|((\d+)\s?\˜°|((\d+)\s?\°)|(\d+)\s?\˚))\s?((\d+)\s?\’|(\d+)\s?\')?\s?((\d{1,}\.?\,?\d{0,}?)\")?\s?[N,S,E,W]` or `[N,S,E,W]((\d+)\s?\º|((\d+)\s?\˜°|((\d+)\s?\°)|(\d+)\s?\˚))\s?((\d+)\s?\’|(\d+)\s?\')?\s?((\d{1,}\.?\,?\d{0,}?)\")?`
+
 
 It is also possible adapt Presidio to detect new types of PII entities.
 1. Deny-list based PII recognition
@@ -363,4 +412,11 @@ docker run –dp 8061:8061 grpc-analyzer
 3) The docker run internally executes analyzer_server.py. Open one more terminal and run the client which now can access the docker server
 ```console
 python data_loader.py
+
+to run generic examples or 
+
+``````console
+python dataloader.py
 ```
+
+to run more specific examples

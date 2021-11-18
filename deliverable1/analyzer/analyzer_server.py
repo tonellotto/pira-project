@@ -1,9 +1,12 @@
 import grpc 
 from google.protobuf.json_format import MessageToJson, Parse
+from presidio_analyzer.nlp_engine.nlp_engine_provider import NlpEngineProvider
+import recognizer
 from proto import model_pb2_grpc as pb2_grpc
 from proto import model_pb2 as pb2
 
 from presidio_analyzer import AnalyzerEngine, Pattern, PatternRecognizer, RecognizerRegistry
+
 
 import json
 import os
@@ -80,33 +83,56 @@ class AnalyzerEntityServicer(pb2_grpc.AnalyzerEntityServicer):
 
 
 def getResult(uuid, fileText):
+
+    registry = RecognizerRegistry()
+    registry.load_predefined_recognizers()
+
+    georecognizer = recognizer.CoordinatesRecognizer()
+
+# Add the recognizer to the existing list of recognizers
+    registry.add_recognizer(georecognizer)
+
+    
+
+    configuration = {
+    "nlp_engine_name": "spacy",
+    "models": [{"lang_code": "it", "model_name": "it_core_news_sm"},
+                {"lang_code": "en", "model_name": "en_core_web_lg"}],
+}
+
+    provider = NlpEngineProvider(nlp_configuration=configuration)
+    nlp_engine_with_italian = provider.create_engine()
     
     # Default options
-    ENGINE_OPTIONS = { "registry": None, "regex": None, "deny_list": None, "nlp_engine": None, "app_tracer": None, "log_decision_process": 0, "default_score_threshold": 0, "supported_languages": None }
-    ANALYZE_OPTIONS = { "language":  "en", "entities": None, "correlation_id": None, "score_threshold": 0, "return_decision_process": 0, "ad_hoc_recognizers": None }
+    ENGINE_OPTIONS = { "registry": None, "regex": None, "deny_list": None, "nlp_engine":nlp_engine_with_italian, "app_tracer": None, "log_decision_process": 0, "default_score_threshold": 0, "supported_languages": ["en","it"] }
+    ANALYZE_OPTIONS = { "language":  "it", "entities": None, "correlation_id": None, "score_threshold": 0, "return_decision_process": 0, "ad_hoc_recognizers": None }
 
     # check if engine configuration or analyze() configuration exist
     getEngineOptions(uuid, ENGINE_OPTIONS)
     getAnalyzeOptions(uuid, ANALYZE_OPTIONS)
 
     analyzer = AnalyzerEngine(
-                                registry = ENGINE_OPTIONS['registry'],
-                                nlp_engine = ENGINE_OPTIONS['nlp_engine'], # default value
-                                app_tracer = ENGINE_OPTIONS['app_tracer'], # default value
-                                log_decision_process = int(ENGINE_OPTIONS['log_decision_process']), 
-                                default_score_threshold = float(ENGINE_OPTIONS['default_score_threshold']),
-                                supported_languages = ENGINE_OPTIONS['supported_languages'] # list of specified languages
+        registry = ENGINE_OPTIONS['registry'],
+        nlp_engine=nlp_engine_with_italian,
+        supported_languages = ENGINE_OPTIONS['supported_languages'],
+        app_tracer = ENGINE_OPTIONS['app_tracer'],
+        log_decision_process = int(ENGINE_OPTIONS['log_decision_process']),
+        default_score_threshold = float(ENGINE_OPTIONS['default_score_threshold'])
+
     )
+   
     results = analyzer.analyze(
-                                fileText, 
-                                language= ANALYZE_OPTIONS['language'], 
-                                entities = ANALYZE_OPTIONS['entities'],
-                                correlation_id = ANALYZE_OPTIONS['correlation_id'], 
-                                score_threshold = float(ANALYZE_OPTIONS['score_threshold']), 
-                                return_decision_process = int(ANALYZE_OPTIONS['return_decision_process']),
-                                ad_hoc_recognizers = ANALYZE_OPTIONS['ad_hoc_recognizers'] # array of objects (PatternRecognizer)
+        text = fileText, 
+        language= ANALYZE_OPTIONS['language'], 
+        entities = ANALYZE_OPTIONS['entities'],
+        correlation_id = ANALYZE_OPTIONS['correlation_id'], 
+        score_threshold = float(ANALYZE_OPTIONS['score_threshold']), 
+        return_decision_process = int(ANALYZE_OPTIONS['return_decision_process']),
+        ad_hoc_recognizers = ANALYZE_OPTIONS['ad_hoc_recognizers'] # array of objects (PatternRecognizer)
     )
 
+
+  
     #if int(ANALYZE_OPTIONS['return_decision_process']):
     #    for result in results:
     #        decision_process = result.analysis_explanation
@@ -114,7 +140,7 @@ def getResult(uuid, fileText):
     #        print("\nDecision process output:\n")
     #        pp.pprint(decision_process.__dict__)
 
-    print("[+] Presidio Analyzer: DONE!\n")
+    print("[+] Presidio Analyzer: DONE!\n",len(results))
     return results
 
 def getEngineOptions(uuid, ENGINE_OPTIONS):
@@ -220,5 +246,4 @@ def run_server():
 
 if __name__ == '__main__':
     print(":::::::::::::::::: PRESIDIO ANALYZER (Server) ::::::::::::::::::\n")
-    #port = input("PORT: ")
     run_server()
